@@ -1,0 +1,11 @@
+type PersonOnly {
+    id: ID
+    name: String
+    phone: String
+}
+
+type Query{
+    getPeople: [PersonOnly]
+    getPeopleByName(name: String): [PersonOnly]
+    getPersonByPhone(phone: String): PersonOnly
+}
