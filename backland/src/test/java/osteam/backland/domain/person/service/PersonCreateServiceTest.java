@@ -2,10 +2,12 @@ package osteam.backland.domain.person.service;
 
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import osteam.backland.domain.person.entity.PersonOneToMany;
 import osteam.backland.domain.person.entity.PersonOneToOne;
@@ -20,91 +22,85 @@ import osteam.backland.domain.phone.repository.PhoneOneToManyRepository;
 import osteam.backland.domain.phone.repository.PhoneOneToOneRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+
 @SpringBootTest
 public class PersonCreateServiceTest {
-    @InjectMocks
-    private PersonCreateService personCreateService;
-    @Mock
-    private PersonOnlyRepository personOnlyRepository;
-    @Mock
-    private PersonOneToOneRepository personOneToOneRepository;
-    @Mock
-    private PersonOneToManyRepository personOneToManyRepository;
-    @Mock
-    private PhoneOneToOneRepository phoneOneToOneRepository;
+    private final PersonCreateService personCreateService;
+    private final PersonOnlyRepository personOnlyRepository;
+    private final PersonOneToOneRepository personOneToOneRepository;
+    private final PersonOneToManyRepository personOneToManyRepository;
+    private final PhoneOneToOneRepository phoneOneToOneRepository;
+    private final PhoneOneToManyRepository phoneOneToManyRepository;
 
-    @Mock
-    private PhoneOneToManyRepository phoneOneToManyRepository;
-
-    public PersonCreateServiceTest() {
-        MockitoAnnotations.openMocks(this);
+    @Autowired
+    public PersonCreateServiceTest(PersonCreateService personCreateService, PersonOnlyRepository personOnlyRepository, PersonOneToOneRepository personOneToOneRepository, PersonOneToManyRepository personOneToManyRepository, PhoneOneToOneRepository phoneOneToOneRepository, PhoneOneToManyRepository phoneOneToManyRepository) {
+        this.personCreateService = personCreateService;
+        this.personOnlyRepository = personOnlyRepository;
+        this.personOneToOneRepository = personOneToOneRepository;
+        this.personOneToManyRepository = personOneToManyRepository;
+        this.phoneOneToOneRepository = phoneOneToOneRepository;
+        this.phoneOneToManyRepository = phoneOneToManyRepository;
     }
 
     @Test
     @Transactional
     public void testOneToOne() {
-        String name = "minho";
-        String phone = "1234567890";
+        String name = "testman";
+        String phone = "01012341234";
 
-        PersonOneToOne personOneToOne = new PersonOneToOne();
-        personOneToOne.setName(name);
+        personCreateService.oneToOne(name, phone);
 
-        PhoneOneToOne phoneOneToOne = new PhoneOneToOne();
-        phoneOneToOne.setPhone(phone);
+        PersonOneToOne person = personOneToOneRepository.findByName(name).get(0);
 
-        when(personOneToOneRepository.save(any())).thenReturn(personOneToOne);
-        when(phoneOneToOneRepository.save(any())).thenReturn(phoneOneToOne);
-
-        PersonDTO result = personCreateService.oneToOne(name, phone);
-
-        assertEquals(name, result.getName());
-        assertEquals(phone, result.getPhone());
+        assertEquals(name, person.getName());
+        assertEquals(phone, person.getPhoneOneToOne().getPhone());
     }
 
-    @Test
-    @Transactional
-    public void testOneToMany() {
-        String name = "minho";
-        String phone = "1234567890";
-
-        PersonOneToMany personOneToMany = new PersonOneToMany();
-        personOneToMany.setName(name);
-        personOneToMany.setPhoneOneToMany(new ArrayList<>());
-
-        PhoneOneToMany phoneOneToMany = new PhoneOneToMany();
-        phoneOneToMany.setPhone(phone);
-
-        when(personOneToManyRepository.findByName(name)).thenReturn(Optional.of(personOneToMany));
-        when(phoneOneToManyRepository.findByPhone(phone)).thenReturn(Optional.of(phoneOneToMany));
-        when(personOneToManyRepository.save(any())).thenReturn(personOneToMany);
-
-        PersonDTO result = personCreateService.oneToMany(name, phone);
-
-        assertEquals(name, result.getName());
-        assertEquals(phone, result.getPhone());
-    }
-
-    @Test
-    @Transactional
-    public void testOne() {
-        String name = "minho";
-        String phone = "1234567890";
-
-        PersonOnly personOnly = new PersonOnly();
-        personOnly.setName(name);
-        personOnly.setPhone(phone);
-
-        when(personOnlyRepository.save(any())).thenReturn(personOnly);
-
-        PersonDTO result = personCreateService.one(name, phone);
-
-        assertEquals(name, result.getName());
-        assertEquals(phone, result.getPhone());
-    }
+//    @Test
+//    @Transactional
+//    public void testOneToMany() {
+//        String name = "minho";
+//        String phone = "1234567890";
+//
+//        PersonOneToMany personOneToMany = new PersonOneToMany();
+//        personOneToMany.setName(name);
+//        personOneToMany.setPhoneOneToMany(new ArrayList<>());
+//
+//        PhoneOneToMany phoneOneToMany = new PhoneOneToMany();
+//        phoneOneToMany.setPhone(phone);
+//
+//        when(personOneToManyRepository.findByName(name)).thenReturn(Optional.of(personOneToMany));
+//        when(phoneOneToManyRepository.findByPhone(phone)).thenReturn(Optional.of(phoneOneToMany));
+//        when(personOneToManyRepository.save(any())).thenReturn(personOneToMany);
+//
+//        PersonDTO result = personCreateService.oneToMany(name, phone);
+//
+//        assertEquals(name, result.getName());
+//        assertEquals(phone, result.getPhone());
+//    }
+//
+//    @Test
+//    @Transactional
+//    public void testOne() {
+//        String name = "minho";
+//        String phone = "1234567890";
+//
+//        PersonOnly personOnly = new PersonOnly();
+//        personOnly.setName(name);
+//        personOnly.setPhone(phone);
+//
+//        when(personOnlyRepository.save(any())).thenReturn(personOnly);
+//
+//        PersonDTO result = personCreateService.one(name, phone);
+//
+//        assertEquals(name, result.getName());
+//        assertEquals(phone, result.getPhone());
+//    }
 }

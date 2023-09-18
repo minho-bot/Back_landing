@@ -56,7 +56,7 @@ public class PersonCreateService {
         PhoneOneToOne phoneOneToOne = new PhoneOneToOne();
         phoneOneToOne.setPhone(phone);
 
-//        personOneToOne.setPhoneOneToOne(phoneOneToOne);
+        personOneToOne.setPhoneOneToOne(phoneOneToOne);
         phoneOneToOne.setPersonOneToOne(personOneToOne);
 
         personOneToOneRepository.save(personOneToOne);
