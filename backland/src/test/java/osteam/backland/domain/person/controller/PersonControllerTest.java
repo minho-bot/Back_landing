@@ -1,9 +1,7 @@
 package osteam.backland.domain.person.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,20 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
-import osteam.backland.domain.person.entity.PersonOneToOne;
-import osteam.backland.domain.person.service.PersonCreateService;
-import osteam.backland.domain.phone.entity.PhoneOneToOne;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PersonControllerTest {
-
     @Autowired
     private MockMvc mock;
     @Autowired
@@ -58,8 +49,7 @@ public class PersonControllerTest {
         mock.perform(post("/person")
                 .content(longPhonePerson)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.phone").value(longPhone));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -73,9 +63,7 @@ public class PersonControllerTest {
         mock.perform(post("/person")
                 .content(shortPhonePerson)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("team"))
-                .andExpect(jsonPath("$.phone").value("010"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -116,7 +104,6 @@ public class PersonControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
-
 
     @Test
     @Transactional

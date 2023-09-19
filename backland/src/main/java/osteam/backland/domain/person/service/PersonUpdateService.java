@@ -18,19 +18,16 @@ import osteam.backland.domain.phone.repository.PhoneOneToOneRepository;
 public class PersonUpdateService {
     private final PersonOnlyRepository personOnlyRepository;
     private final PersonOneToOneRepository personOneToOneRepository;
-    private final PersonOneToManyRepository personOneToManyRepository;
     private final PhoneOneToOneRepository phoneOneToOneRepository;
 
     @Autowired
     public PersonUpdateService(
             PersonOnlyRepository personOnlyRepository,
             PersonOneToOneRepository personOneToOneRepository,
-            PersonOneToManyRepository personOneToManyRepository,
             PhoneOneToOneRepository phoneOneToOneRepository
     ){
         this.personOnlyRepository = personOnlyRepository;
         this.personOneToOneRepository = personOneToOneRepository;
-        this.personOneToManyRepository = personOneToManyRepository;
         this.phoneOneToOneRepository = phoneOneToOneRepository;
     }
 

@@ -4,19 +4,23 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
 import osteam.backland.domain.person.controller.response.PersonResponse;
 import osteam.backland.domain.person.entity.PersonOnly;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
+import osteam.backland.domain.person.exception.InputNotFoundException;
 import osteam.backland.domain.person.service.PersonCreateService;
 import osteam.backland.domain.person.service.PersonSearchService;
 import osteam.backland.domain.person.service.PersonUpdateService;
+import osteam.backland.global.exception.controller.ExceptionController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,25 +36,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/person")
+@RequiredArgsConstructor
 public class PersonController {
 
-    private PersonCreateService personCreateService;
-    private PersonUpdateService personUpdateService;
-    private PersonSearchService personSearchService;
+    private final PersonCreateService personCreateService;
+    private final PersonUpdateService personUpdateService;
+    private final PersonSearchService personSearchService;
     private final ModelMapper modelMapper;
+    private final ExceptionController exceptionController;
 
-    @Autowired
-    public PersonController(
-            PersonCreateService personCreateSErvice,
-            PersonUpdateService personUpdateService,
-            PersonSearchService personSearchService,
-            ModelMapper modelMapper
-    ) {
-        this.personCreateService = personCreateSErvice;
-        this.personUpdateService = personUpdateService;
-        this.personSearchService = personSearchService;
-        this.modelMapper = modelMapper;
-    }
 
     /**
      * 등록 기능
@@ -62,12 +56,13 @@ public class PersonController {
     @PostMapping
     @Operation(summary = "Create a new person", description = "Create a new person with the provided information.")
     public ResponseEntity<PersonResponse> person(@Valid @RequestBody PersonCreateRequest personCreateRequest) {
+
         String name = personCreateRequest.getName();
         String phone = personCreateRequest.getPhone();
         PersonDTO one;
 
-        boolean isDuplicate = personSearchService.isOneExist(phone);
-        if(isDuplicate){
+        boolean isExist = personSearchService.isOneExist(phone);
+        if(isExist){
             one = personUpdateService.one(name, phone);
             personUpdateService.oneToOne(name, phone);
             System.out.println("updated");
@@ -110,13 +105,9 @@ public class PersonController {
     @Operation(summary = "Get people by name", description = "Retrieve a list of people by their name.")
     public ResponseEntity<List<PersonResponse>> getPeopleByName(String name) {
         if (name == null || name.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new InputNotFoundException("name");
         }
-
         List<PersonDTO> people = personSearchService.getPeopleByName(name);
-        if (people.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
 
         List<PersonResponse> response = people.stream()
                 .map(personDTO -> modelMapper.map(personDTO, PersonResponse.class))
@@ -131,22 +122,14 @@ public class PersonController {
      */
     @GetMapping("/phone")
     @Operation(summary = "Get person by phone number", description = "Retrieve a person by their phone number.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Person found and retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Person not found")
-    })
     public ResponseEntity<PersonResponse> getPersonByPhone(String phone) {
         if (phone == null || phone.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new InputNotFoundException("phone");
         }
         PersonDTO person = personSearchService.getPersonByPhone(phone);
-        if(person == null){
-            return ResponseEntity.notFound().build();
-        }
-        else{
-            PersonResponse response = modelMapper.map(person, PersonResponse.class);
-            return ResponseEntity.ok(response);
 
-        }
+        PersonResponse response = modelMapper.map(person, PersonResponse.class);
+        return ResponseEntity.ok(response);
     }
+
 }

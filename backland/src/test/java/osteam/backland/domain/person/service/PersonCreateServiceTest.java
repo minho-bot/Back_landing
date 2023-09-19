@@ -20,8 +20,6 @@ public class PersonCreateServiceTest {
     private final PersonCreateService personCreateService;
     private final PersonOnlyRepository personOnlyRepository;
     private final PersonOneToOneRepository personOneToOneRepository;
-    private final PersonOneToManyRepository personOneToManyRepository;
-    private final PhoneOneToOneRepository phoneOneToOneRepository;
     private final PhoneOneToManyRepository phoneOneToManyRepository;
 
     @Autowired
@@ -29,8 +27,6 @@ public class PersonCreateServiceTest {
         this.personCreateService = personCreateService;
         this.personOnlyRepository = personOnlyRepository;
         this.personOneToOneRepository = personOneToOneRepository;
-        this.personOneToManyRepository = personOneToManyRepository;
-        this.phoneOneToOneRepository = phoneOneToOneRepository;
         this.phoneOneToManyRepository = phoneOneToManyRepository;
     }
 

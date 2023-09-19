@@ -1,0 +1,7 @@
+query {
+    getPeople {
+        id
+        name
+        phone
+    }
+}
