@@ -18,5 +18,5 @@ public class PhoneOneToOne extends PrimaryKeyEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_user_id", referencedColumnName = "id")
-    private PersonOneToOne person;
+    private PersonOneToOne personOneToOne;
 }
